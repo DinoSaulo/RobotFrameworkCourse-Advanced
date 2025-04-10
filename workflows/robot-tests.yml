@@ -1,0 +1,39 @@
+name: Run Robot Framework Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  robot-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install robotframework
+          # Instale outras bibliotecas se necessário:
+          # pip install robotframework-seleniumlibrary
+          # pip install robotframework-requests
+
+      - name: Run Robot Framework tests
+        run: |
+          robot -d results tests/
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: robot-results
+          path: results/
